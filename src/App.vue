@@ -4,7 +4,8 @@ import MapLibreView from "@/components/MapLibreView.vue";
 import type { MapConfig, MapMarker } from "@/types/map";
 import { mockMarkers50 } from "@/mocks/mapData";
 
-const VECTOR_STYLE_URL = "http://localhost:8080/style.json";
+const VECTOR_STYLE_URL =
+  "https://olymapstilesprod.blob.core.windows.net/teste/style.json";
 
 const styleOptions = [
   { value: "vector", label: "Local vector (3D)", url: VECTOR_STYLE_URL },

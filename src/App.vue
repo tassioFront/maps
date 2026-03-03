@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import MapLibreView from '@/components/MapLibreView.vue'
-import type { MapConfig, MapMarker } from '@/types/map'
-import { mockMarkers50 } from '@/mocks/mapData'
+import { ref, computed } from "vue";
+import MapLibreView from "@/components/MapLibreView.vue";
+import type { MapConfig, MapMarker } from "@/types/map";
+import { mockMarkers50 } from "@/mocks/mapData";
 
-// Vector style from oly-ui-template map-tiles:serve (port 8080). Required for 3D buildings.
-const VECTOR_STYLE_URL = 'http://localhost:8080/style.json'
+const VECTOR_STYLE_URL = "http://localhost:8080/style.json";
 
 const styleOptions = [
-  { value: 'vector', label: 'Local vector (3D)', url: VECTOR_STYLE_URL },
-  { value: 'raster', label: 'OSM Raster', url: '' },
-] as const
+  { value: "vector", label: "Local vector (3D)", url: VECTOR_STYLE_URL },
+  { value: "raster", label: "OSM Raster", url: "" },
+] as const;
 
-const selectedStyle = ref<'vector' | 'raster'>('vector')
+const selectedStyle = ref<"vector" | "raster">("vector");
 
 // Default view: Liechtenstein (matches oly-ui-template default tile region: europe/liechtenstein)
-const DEFAULT_CENTER = { lat: 47.141, lng: 9.521 }
+const DEFAULT_CENTER = { lat: 47.141, lng: 9.521 };
 
 const mapConfig = ref<MapConfig>({
   initialCenter: DEFAULT_CENTER,
@@ -23,52 +22,59 @@ const mapConfig = ref<MapConfig>({
   enable3D: false,
   enableClustering: true,
   mapStyle: VECTOR_STYLE_URL,
-})
+});
 
 // Keep mapStyle in sync with dropdown; empty string = use OSM raster in MapLibreView
 function onStyleChange() {
-  const opt = styleOptions.find((o) => o.value === selectedStyle.value)
+  const opt = styleOptions.find((o) => o.value === selectedStyle.value);
   mapConfig.value = {
     ...mapConfig.value,
-    mapStyle: opt?.url ?? '',
-  }
+    mapStyle: opt?.url ?? "",
+  };
 }
 
-const sampleMarkers = ref<MapMarker[]>(mockMarkers50)
+const sampleMarkers = ref<MapMarker[]>(mockMarkers50);
 
-const mapRef = ref<InstanceType<typeof MapLibreView> | null>(null)
-const selectedCount = ref(0)
+const mapRef = ref<InstanceType<typeof MapLibreView> | null>(null);
+const selectedCount = ref(0);
 
 function onSelectionChange(payload: { ids: string[]; markers: MapMarker[] }) {
-  selectedCount.value = payload.ids.length
+  selectedCount.value = payload.ids.length;
 }
 
 function zoomIn() {
-  mapRef.value?.zoomIn()
+  mapRef.value?.zoomIn();
 }
 function zoomOut() {
-  mapRef.value?.zoomOut()
+  mapRef.value?.zoomOut();
 }
 function toggle3D() {
-  mapRef.value?.toggle3D()
+  mapRef.value?.toggle3D();
 }
 function enableLasso() {
-  mapRef.value?.enableLasso()
+  mapRef.value?.enableLasso();
 }
 function disableLasso() {
-  mapRef.value?.disableLasso()
+  mapRef.value?.disableLasso();
 }
 function clearSelection() {
-  mapRef.value?.clearSelection()
+  mapRef.value?.clearSelection();
 }
 function toggleClustering() {
-  mapConfig.value = { ...mapConfig.value, enableClustering: !mapConfig.value.enableClustering }
+  mapConfig.value = {
+    ...mapConfig.value,
+    enableClustering: !mapConfig.value.enableClustering,
+  };
 }
 
-const isLassoActive = computed(() => mapRef.value?.lasso?.isLassoActive?.value ?? false)
-const isClusteringEnabled = computed(() => mapConfig.value.enableClustering ?? false)
-const totalMarkers = computed(() => sampleMarkers.value.length)
-const renderedCount = ref(0)
+const isLassoActive = computed(
+  () => mapRef.value?.lasso?.isLassoActive?.value ?? false,
+);
+const isClusteringEnabled = computed(
+  () => mapConfig.value.enableClustering ?? false,
+);
+const totalMarkers = computed(() => sampleMarkers.value.length);
+const renderedCount = ref(0);
 </script>
 
 <template>
@@ -77,7 +83,13 @@ const renderedCount = ref(0)
       <label class="toolbar-label">
         Style
         <select v-model="selectedStyle" @change="onStyleChange">
-          <option v-for="opt in styleOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+          <option
+            v-for="opt in styleOptions"
+            :key="opt.value"
+            :value="opt.value"
+          >
+            {{ opt.label }}
+          </option>
         </select>
       </label>
       <button type="button" @click="zoomIn">Zoom +</button>
@@ -98,7 +110,9 @@ const renderedCount = ref(0)
         Lasso
       </button>
       <button type="button" @click="clearSelection">Clear selection</button>
-      <span class="toolbar-info">Markers: {{ renderedCount }} / {{ totalMarkers }} rendered</span>
+      <span class="toolbar-info"
+        >Markers: {{ renderedCount }} / {{ totalMarkers }} rendered</span
+      >
       <span class="toolbar-info">Selected: {{ selectedCount }}</span>
     </div>
     <div class="map-area">
@@ -118,7 +132,9 @@ const renderedCount = ref(0)
 * {
   box-sizing: border-box;
 }
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   margin: 0;
 }

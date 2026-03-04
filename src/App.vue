@@ -4,6 +4,12 @@ import MapLibreView from "@/components/MapLibreView.vue";
 import type { MapConfig, MapMarker } from "@/types/map";
 import { mockMarkers50 } from "@/mocks/mapData";
 
+const markersFromQuery = (): number => {
+  const n = new URLSearchParams(window.location.search).get("markers");
+  const parsed = n != null ? Number(n) : NaN;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 50;
+};
+
 const VECTOR_STYLE_URL =
   "https://olymapstilesprod.blob.core.windows.net/teste/style.json";
 
@@ -34,7 +40,7 @@ function onStyleChange() {
   };
 }
 
-const sampleMarkers = ref<MapMarker[]>(mockMarkers50);
+const sampleMarkers = ref<MapMarker[]>(mockMarkers50(markersFromQuery()));
 
 const mapRef = ref<InstanceType<typeof MapLibreView> | null>(null);
 const selectedCount = ref(0);

@@ -23,10 +23,7 @@ function generateMarkers(
   return out
 }
 
-/** 50 markers spread around Vaduz / Liechtenstein (matches local vector tiles). */
-export const mockMarkers50: MapMarker[] = generateMarkers(
-  50,
-  LIECHTENSTEIN_CENTER,
-  0.02,
-  0.025
-)
+/** N markers spread around Vaduz / Liechtenstein (matches local vector tiles). */
+export function mockMarkers50(count = 50): MapMarker[] {
+  return generateMarkers(count, LIECHTENSTEIN_CENTER, 0.02, 0.025)
+}

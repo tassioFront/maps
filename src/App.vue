@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import MapLibreView from "@/components/MapLibreView.vue";
 import type { MapConfig, MapMarker } from "@/types/map";
 import { mockMarkers50 } from "@/mocks/mapData";
@@ -91,6 +91,26 @@ const isClusteringEnabled = computed(
 );
 const totalMarkers = computed(() => sampleMarkers.value.length);
 const renderedCount = ref(0);
+const renderTimeMs = ref<number | null>(null);
+let renderStartTime: number | null = null;
+
+onMounted(() => {
+  renderStartTime = performance.now();
+});
+
+watch(
+  [() => totalMarkers.value, selectedStyle],
+  () => {
+    renderTimeMs.value = null;
+    renderStartTime = performance.now();
+  }
+);
+
+function onRenderComplete() {
+  if (renderStartTime !== null) {
+    renderTimeMs.value = Math.round(performance.now() - renderStartTime);
+  }
+}
 </script>
 
 <template>
@@ -127,7 +147,8 @@ const renderedCount = ref(0);
       </button>
       <button type="button" @click="clearSelection">Clear selection</button>
       <span class="toolbar-info"
-        >Markers: {{ renderedCount }} / {{ totalMarkers }} rendered</span
+        >Markers: {{ renderedCount }} / {{ totalMarkers }} rendered
+        <template v-if="renderTimeMs !== null"> in {{ renderTimeMs }} ms</template></span
       >
       <span class="toolbar-info">Selected: {{ selectedCount }}</span>
     </div>
@@ -138,6 +159,7 @@ const renderedCount = ref(0);
         :config="mapConfig"
         :markers="sampleMarkers"
         @selection-change="onSelectionChange"
+        @render-complete="onRenderComplete"
         @rendered-count-change="renderedCount = $event"
       />
     </div>

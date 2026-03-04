@@ -39,6 +39,7 @@ const emit = defineEmits<{
   mapReady: [map: maplibregl.Map]
   markerClick: [marker: MapMarker]
   selectionChange: [payload: { ids: string[]; markers: MapMarker[] }]
+  renderComplete: []
   renderedCountChange: [count: number]
 }>()
 
@@ -52,6 +53,7 @@ const lasso = useMapLibreLasso(mapInstance as Ref<maplibregl.Map | null>)
 const enableClusteringRef = computed(() => props.config.enableClustering ?? false)
 const markerManager = useMapLibreMarkers(mapInstance as Ref<maplibregl.Map | null>, {
   onMarkerClick: (marker) => emit('markerClick', marker),
+  onSyncOverlayComplete: () => emit('renderComplete'),
   enableClustering: enableClusteringRef,
 })
 const buildingTags = useMapLibreBuildingTags(mapInstance as Ref<maplibregl.Map | null>)

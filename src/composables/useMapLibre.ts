@@ -374,6 +374,7 @@ export type MarkerDisplayItem =
 
 export interface UseMapLibreMarkersOptions {
   onMarkerClick?: (marker: MapMarker) => void
+  onSyncOverlayComplete?: () => void
   viewportPadding?: number
   maxVisibleAtLowZoom?: number
   lowZoomThreshold?: number
@@ -389,6 +390,7 @@ const CLUSTER_COLOR = '#5a7fd4'
 export function useMapLibreMarkers(mapInstance: Ref<maplibregl.Map | null>, options: UseMapLibreMarkersOptions = {}) {
   const {
     onMarkerClick,
+    onSyncOverlayComplete,
     viewportPadding = 80,
     maxVisibleAtLowZoom = 500,
     lowZoomThreshold = 10,
@@ -523,6 +525,7 @@ export function useMapLibreMarkers(mapInstance: Ref<maplibregl.Map | null>, opti
     visibleMarkerCount.value = items.length
     const highlightedList = Array.from(highlightedIds.value)
     syncOverlay(map, items, highlightedList)
+    onSyncOverlayComplete?.()
   }
 
   function syncOverlay(map: maplibregl.Map, items: MarkerDisplayItem[], highlighted: string[]): void {

@@ -386,6 +386,7 @@ export interface UseMapLibreMarkersOptions {
 const CLUSTER_PREFIX = 'cluster-'
 const CLUSTER_SIZE_PX = 40
 const CLUSTER_COLOR = '#5a7fd4'
+const HIGHLIGHTED_CLUSTER_COLOR = '#ea4335'
 
 export function useMapLibreMarkers(mapInstance: Ref<maplibregl.Map | null>, options: UseMapLibreMarkersOptions = {}) {
   const {
@@ -543,12 +544,18 @@ export function useMapLibreMarkers(mapInstance: Ref<maplibregl.Map | null>, opti
     items.forEach((item) => {
       const point = map.project([item.position.lng, item.position.lat])
       if (item.type === 'cluster') {
+        const clusterHasHighlightedMarker =
+          superclusterInstance &&
+          superclusterInstance
+            .getLeaves(item.clusterId, Infinity)
+            .some((leaf) => (leaf.properties as { id?: string })?.id && set.has((leaf.properties as { id: string }).id))
+        const clusterColor = clusterHasHighlightedMarker ? HIGHLIGHTED_CLUSTER_COLOR : CLUSTER_COLOR
         let div = markerEls.get(item.id)
         if (!div) {
           div = document.createElement('div')
           div.setAttribute(
             'style',
-            `position:absolute;width:${CLUSTER_SIZE_PX}px;height:${CLUSTER_SIZE_PX}px;border-radius:50%;background-color:${CLUSTER_COLOR};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);pointer-events:auto;cursor:pointer;margin-left:-${CLUSTER_SIZE_PX / 2}px;margin-top:-${CLUSTER_SIZE_PX / 2}px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;`
+            `position:absolute;width:${CLUSTER_SIZE_PX}px;height:${CLUSTER_SIZE_PX}px;border-radius:50%;background-color:${clusterColor};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);pointer-events:auto;cursor:pointer;margin-left:-${CLUSTER_SIZE_PX / 2}px;margin-top:-${CLUSTER_SIZE_PX / 2}px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;`
           )
           div.setAttribute('data-marker-id', item.id)
           div.classList.add('marker', 'cluster')
@@ -563,6 +570,7 @@ export function useMapLibreMarkers(mapInstance: Ref<maplibregl.Map | null>, opti
           markerEls.set(item.id, div)
         } else {
           div.textContent = String(item.count)
+          div.style.backgroundColor = clusterColor
         }
         div.style.left = `${point.x}px`
         div.style.top = `${point.y}px`

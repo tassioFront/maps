@@ -98,13 +98,10 @@ onMounted(() => {
   renderStartTime = performance.now();
 });
 
-watch(
-  [() => totalMarkers.value, selectedStyle],
-  () => {
-    renderTimeMs.value = null;
-    renderStartTime = performance.now();
-  }
-);
+watch([() => totalMarkers.value, selectedStyle], () => {
+  renderTimeMs.value = null;
+  renderStartTime = performance.now();
+});
 
 function onRenderComplete() {
   if (renderStartTime !== null) {
@@ -115,8 +112,9 @@ function onRenderComplete() {
 
 <template>
   <div class="app">
-    <div class="toolbar">
-      <label class="toolbar-label">
+    <div class="toolbar-container">
+      <div class="toolbar">
+        <!-- <label class="toolbar-label">
         Style
         <select v-model="selectedStyle" @change="onStyleChange">
           <option
@@ -127,30 +125,71 @@ function onRenderComplete() {
             {{ opt.label }}
           </option>
         </select>
-      </label>
-      <button type="button" @click="zoomIn">Zoom +</button>
-      <button type="button" @click="zoomOut">Zoom −</button>
-      <button type="button" @click="toggle3D">3D</button>
-      <button
-        type="button"
-        :class="{ active: isClusteringEnabled }"
-        @click="toggleClustering"
-      >
-        Clustering
-      </button>
-      <button
-        type="button"
-        :class="{ active: isLassoActive }"
-        @click="isLassoActive ? disableLasso() : enableLasso()"
-      >
-        Lasso
-      </button>
-      <button type="button" @click="clearSelection">Clear selection</button>
-      <span class="toolbar-info"
-        >Markers: {{ renderedCount }} / {{ totalMarkers }} rendered
-        <template v-if="renderTimeMs !== null"> in {{ renderTimeMs }} ms</template></span
-      >
-      <span class="toolbar-info">Selected: {{ selectedCount }}</span>
+      </label> -->
+        <button type="button" @click="zoomIn">Zoom +</button>
+        <button type="button" @click="zoomOut">Zoom −</button>
+        <button type="button" @click="toggle3D">3D</button>
+        <button
+          type="button"
+          :class="{ active: isClusteringEnabled }"
+          @click="toggleClustering"
+        >
+          Clustering
+        </button>
+      </div>
+      <br />
+      <div class="toolbar">
+        <button
+          type="button"
+          :class="{ active: isLassoActive }"
+          @click="isLassoActive ? disableLasso() : enableLasso()"
+        >
+          Lasso
+        </button>
+        <span
+          class="lasso-info"
+          title="Lasso: click to add points (min 3), double-click to close and select markers inside."
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+            <path
+              d="M12 16V12M12 9H12.01"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="lasso-info-text"
+            >Click to add points (min 3), double-click to close.</span
+          >
+        </span>
+        <button type="button" @click="clearSelection">Clear selection</button>
+      </div>
+      <br />
+      <div class="toolbar">
+        <span class="toolbar-info"
+          >Markers: {{ renderedCount }} / {{ totalMarkers }} rendered
+          <template v-if="renderTimeMs !== null">
+            in {{ renderTimeMs }} ms</template
+          ></span
+        >
+        <span class="toolbar-info">Selected: {{ selectedCount }}</span>
+      </div>
     </div>
     <div class="map-area">
       <MapLibreView
@@ -221,6 +260,19 @@ body,
   margin-left: 12px;
   font-size: 14px;
   color: #555;
+}
+.lasso-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+}
+.lasso-info svg {
+  flex-shrink: 0;
+}
+.lasso-info-text {
+  white-space: nowrap;
 }
 .map-area {
   flex: 1;

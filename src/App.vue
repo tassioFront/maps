@@ -4,10 +4,19 @@ import MapLibreView from "@/components/MapLibreView.vue";
 import type { MapConfig, MapMarker } from "@/types/map";
 import { mockMarkers50 } from "@/mocks/mapData";
 
+const params = new URLSearchParams(window.location.search);
+
 const markersFromQuery = (): number => {
-  const n = new URLSearchParams(window.location.search).get("markers");
+  const n = params.get("m");
   const parsed = n != null ? Number(n) : NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 50;
+};
+
+const clusteringFromQuery = (): boolean => {
+  const c = params.get("c");
+  if (c == null) return true;
+  const lower = c.toLowerCase();
+  return lower !== "0" && lower !== "false" && lower !== "no";
 };
 
 const VECTOR_STYLE_URL =
@@ -27,7 +36,7 @@ const mapConfig = ref<MapConfig>({
   initialCenter: DEFAULT_CENTER,
   initialZoom: 12,
   enable3D: false,
-  enableClustering: true,
+  enableClustering: clusteringFromQuery(),
   mapStyle: VECTOR_STYLE_URL,
 });
 
